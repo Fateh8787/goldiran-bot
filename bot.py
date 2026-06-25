@@ -21,7 +21,9 @@ while True:
     try:
         for feed_url in RSS_FEEDS:
             feed = feedparser.parse(feed_url)
-
+print("Checking:", feed_url)
+print("Feed status:", getattr(feed, "status", "unknown"))
+print("Entries:", len(feed.entries))
             for entry in feed.entries[:10]:
                 if entry.link in sent_links:
                     continue
