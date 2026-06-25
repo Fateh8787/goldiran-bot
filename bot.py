@@ -39,3 +39,5 @@ while True:
     except Exception as e:
         print("ERROR:", e)
         time.sleep(30)
+if not any(word in item["title"] for word in KEYWORDS):
+    continue
