@@ -4,6 +4,8 @@ import feedparser
 from telegram import Bot
 
 TOKEN = os.getenv("BOT_TOKEN")
+print("Bot started")
+print("Token:", TOKEN)
 CHANNEL_ID = "@goldiran87"
 
 bot = Bot(token=TOKEN)
