@@ -25,7 +25,10 @@ while True:
 
 🔗 {item['link']}
 """
+price = get_gold_price()
 
+if price:
+    text += "\n\n📈 قیمت لحظه‌ای نیز در دسترس است."
             bot.send_message(
                 chat_id=CHANNEL_ID,
                 text=text,
@@ -41,3 +44,4 @@ while True:
     except Exception as e:
         print("❌ ERROR:", e)
         time.sleep(30)
+from price import get_gold_price
