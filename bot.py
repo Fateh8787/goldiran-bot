@@ -2,10 +2,11 @@ import time
 from telegram import Bot
 from config import BOT_TOKEN, CHANNEL_ID, CHECK_INTERVAL
 from sources import get_news
+from database import init_db, exists, save
 
 bot = Bot(BOT_TOKEN)
 
-sent_links = set()
+init_db()
 
 print("✅ GoldIranBot Started")
 
@@ -14,10 +15,11 @@ while True:
         news = get_news()
 
         for item in news:
-            if item["link"] in sent_links:
+
+            if exists(item["link"]):
                 continue
 
-            text = f"""🚨 خبر جدید بازار طلا
+            text = f"""🚨 خبر فوری بازار طلا
 
 📰 {item['title']}
 
@@ -30,14 +32,12 @@ while True:
                 disable_web_page_preview=True
             )
 
-            print("ارسال شد:", item["title"])
+            save(item["link"], item["title"])
 
-            sent_links.add(item["link"])
+            print("✅ Sent:", item["title"])
 
         time.sleep(CHECK_INTERVAL)
 
     except Exception as e:
-        print("ERROR:", e)
+        print("❌ ERROR:", e)
         time.sleep(30)
-if not any(word in item["title"] for word in KEYWORDS):
-    continue
