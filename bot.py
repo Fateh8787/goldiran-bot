@@ -1,50 +1,41 @@
-import os
 import time
-import feedparser
 from telegram import Bot
+from config import BOT_TOKEN, CHANNEL_ID, CHECK_INTERVAL
+from sources import get_news
 
-TOKEN = os.getenv("BOT_TOKEN")
-
-print("Bot started")
-print("Token:", TOKEN)
-CHANNEL_ID = "@goldiran87"
-
-bot = Bot(token=TOKEN)
+bot = Bot(BOT_TOKEN)
 
 sent_links = set()
 
-RSS_FEEDS = [
-    "https://www.talanews.com/feed"
-]
+print("✅ GoldIranBot Started")
 
 while True:
     try:
-        for feed_url in RSS_FEEDS:
-            feed = feedparser.parse(feed_url)
-print("Checking:", feed_url)
-print("Feed status:", getattr(feed, "status", "unknown"))
-print("Entries:", len(feed.entries))
-            for entry in feed.entries[:10]:
-                if entry.link in sent_links:
-                    continue
+        news = get_news()
 
-                message = f"""
-🚨 خبر جدید بازار طلا
+        for item in news:
+            if item["link"] in sent_links:
+                continue
 
-{entry.title}
+            text = f"""🚨 خبر جدید بازار طلا
 
-{entry.link}
+📰 {item['title']}
+
+🔗 {item['link']}
 """
 
-                bot.send_message(
-                    chat_id=CHANNEL_ID,
-                    text=message
-                )
+            bot.send_message(
+                chat_id=CHANNEL_ID,
+                text=text,
+                disable_web_page_preview=True
+            )
 
-                sent_links.add(entry.link)
+            print("ارسال شد:", item["title"])
 
-        time.sleep(300)
+            sent_links.add(item["link"])
+
+        time.sleep(CHECK_INTERVAL)
 
     except Exception as e:
-        print(e)
-        time.sleep(60)
+        print("ERROR:", e)
+        time.sleep(30)
